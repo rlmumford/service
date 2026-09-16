@@ -1,0 +1,9 @@
+type: module
+name: Service
+description: 'Service Entity data storage.'
+package: RLMumford
+core_version_requirement: ^10 || ^11
+dependencies:
+  - entity:entity
+  - drupal:user
+  - drupal:views

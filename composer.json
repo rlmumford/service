@@ -1,0 +1,11 @@
+{
+    "name": "rlmumford/service",
+    "description": "Reusable service module extracted from rlmumford/common.",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "drupal/core": "^10 || ^11",
+        "drupal/entity": "^1.4",
+        "php": ">=8.1"
+    }
+}

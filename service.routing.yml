@@ -1,0 +1,14 @@
+entity.service_type.collection:
+  path: '/admin/structure/service_types'
+  defaults:
+    _entity_list: 'service_type'
+    _title: 'Service types'
+  requirements:
+    _permission: 'administer service types'
+entity.service_type.add_form:
+  path: '/admin/structure/service_types/add'
+  defaults:
+    _entity_form: service_type.add
+    _title: 'Add'
+  requirements:
+    _permission: 'administer service types'

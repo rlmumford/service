@@ -1,0 +1,5 @@
+entity.service_type.collection:
+  title: 'Service types'
+  description: 'Manage service types, including fields.'
+  route_name: entity.service_type.collection
+  parent: user.admin_index

@@ -1,0 +1,16 @@
+service.service_type.*:
+  type: config_entity
+  label: 'Service type'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    default_uri:
+      type: string
+      label: 'Default URI'
+    default_label:
+      type: label
+      label: 'Default label'

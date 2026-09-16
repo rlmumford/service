@@ -1,0 +1,26 @@
+administer service types:
+  title: 'Administer service types'
+  restrict access: true
+administer services:
+  title: 'Administer services'
+  restrict access: true
+manage services:
+  title: 'Manage services'
+view any service:
+  title: 'View any service'
+view managed service:
+  title: 'View any service managed by the user'
+view received service:
+  title: 'View any service received by the user'
+update any service:
+  title: 'Update any service'
+update managed service:
+  title: 'Update any service managed by the user'
+update received service:
+  title: 'Update any service received by the user'
+delete any service:
+  title: 'Delete any service'
+delete managed service:
+  title: 'Delete any service managed by the user'
+delete received service:
+  title: 'Delete any service received by the user'

@@ -1,0 +1,115 @@
+<?php
+
+use Drupal\Core\Config\FileStorage;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\service\Entity\Service;
+
+/**
+ * Implements hook_install().
+ */
+function service_install() {
+  $service_field = BaseFieldDefinition::create('service_reference')
+    ->setLabel(t('Service'))
+    ->setRevisionable(TRUE)
+    ->setSetting('target_type', 'service')
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'entity_reference_label',
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'entity_reference_autocomplete',
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  if (\Drupal::moduleHandler()->moduleExists('task')) {
+    \Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition(
+      'service',
+      'task',
+      'service',
+      $service_field
+    );
+  }
+
+  if (\Drupal::moduleHandler()->moduleExists('communication')) {
+    \Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition(
+      'service',
+      'communication',
+      'service',
+      $service_field
+    );
+  }
+}
+
+/**
+ * Add label field.
+ */
+function service_update_8001() {
+  $fields['label'] = BaseFieldDefinition::create('string')
+    ->setLabel(t('Title'))
+    ->setRevisionable(TRUE)
+    ->setDefaultValueCallback('\Drupal\service\Entity\Service::createLabel')
+    ->setDisplayConfigurable('view', TRUE);
+
+  $manager = \Drupal::entityDefinitionUpdateManager();
+  foreach ($fields as $field_name => $definition) {
+    $manager->installFieldStorageDefinition($field_name, 'service', 'service', $definition);
+  }
+
+  // Install configuration.
+  $source = new FileStorage(drupal_get_path('module', 'service').'/config/install');
+  /** @var \Drupal\Core\Config\StorageInterface $config_storage */
+  $config_storage = \Drupal::service('config.storage');
+
+  $configs_to_install = [
+    'views.view.services',
+  ];
+  foreach ($configs_to_install as $name) {
+    $config_storage->write($name, $source->read($name));
+  }
+}
+
+/**
+ * Update services view for permissions.
+ */
+function service_update_8002() {
+  // Install configuration.
+  $source = new FileStorage(drupal_get_path('module', 'service').'/config/install');
+  /** @var \Drupal\Core\Config\StorageInterface $config_storage */
+  $config_storage = \Drupal::service('config.storage');
+
+  $configs_to_install = [
+    'views.view.services',
+  ];
+  foreach ($configs_to_install as $name) {
+    $config_storage->write($name, $source->read($name));
+  }
+}
+
+/**
+ * Install service field on communication entity if module installed.
+ */
+function service_update_8003() {
+  $service_field = BaseFieldDefinition::create('service_reference')
+    ->setLabel(t('Service'))
+    ->setRevisionable(TRUE)
+    ->setSetting('target_type', 'service')
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'entity_reference_label',
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'entity_reference_autocomplete',
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  if (\Drupal::moduleHandler()->moduleExists('communication')) {
+    \Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition(
+      'service',
+      'communication',
+      'service',
+      $service_field
+    );
+  }
+}

@@ -1,0 +1,5 @@
+service_type_add:
+  route_name: entity.service_type.add_form
+  title: 'Add service type'
+  appears_on:
+    - entity.service_type.collection
