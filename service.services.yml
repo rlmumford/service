@@ -1,0 +1,4 @@
+services:
+  service.hierarchy:
+    class: Drupal\service\ServiceHierarchy
+    arguments: ['@entity_type.manager']
