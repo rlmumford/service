@@ -116,7 +116,24 @@ Fresh installs create the same table and row through the schema/install hooks.
 After manually rolling back an outer transaction, discard/reset cached entities,
 as with other Drupal entity writes.
 
+## Service status
+
+New services start in `draft`. The revisionable `status` field accepts `draft`,
+`active`, `complete`, `cancelled`, and `superseded`; `getStatus()` returns the stored
+value. Changing a parent's status never changes child statuses. Direct saves reject
+empty/unsupported statuses, as does normal field validation.
+
+The `status` field replaces the old boolean `state`. No sites are known to use
+that service schema, so there is no legacy preservation or upgrade mapping.
+Use a fresh installation for development databases created with the old schema;
+a cache rebuild alone does not replace their installed fields.
+
+This is status storage infrastructure, not yet an audited transition API.
+The transition graph, explicit authorized reopening, lifecycle events/history,
+and task readiness integration are still pending. Existing task processing does
+not yet enforce service status gates; do not enable it on that assumption.
+
 ## Remaining P2 work
 
-Service/task lifecycle gates and their migrations/history remain open. Parent transitions still do not change child state,
+Service transitions/history and task lifecycle gates/migration remain open. Parent transitions still do not change child state,
 and only the immediate service will gate task execution.

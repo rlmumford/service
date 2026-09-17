@@ -65,6 +65,26 @@ class Service extends ContentEntityBase implements ServiceInterface, EntityOwner
   use EntityOwnerTrait;
 
   /**
+   * Supplies the lifecycle choices for the status field.
+   */
+  public static function statusOptionsList(): array {
+    return [
+      static::STATUS_DRAFT => t('Draft'),
+      static::STATUS_ACTIVE => t('Active'),
+      static::STATUS_COMPLETE => t('Complete'),
+      static::STATUS_CANCELLED => t('Cancelled'),
+      static::STATUS_SUPERSEDED => t('Superseded'),
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getStatus(): ?string {
+    return $this->get('status')->value;
+  }
+
+  /**
    * Supplies the current account for the creator field.
    */
   public static function getCurrentUserId() {
@@ -91,17 +111,16 @@ class Service extends ContentEntityBase implements ServiceInterface, EntityOwner
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['state'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Active?'))
+    $fields['status'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Status'))
       ->setRevisionable(TRUE)
-      ->setDefaultValue(TRUE)
-      ->setDisplayOptions('form', [
-        'type' => 'boolean_checkbox',
-        'settings' => [
-          'display_label' => TRUE,
-        ],
-      ])
-      ->setDisplayConfigurable('form', TRUE);
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values_function', '\\Drupal\\service\\Entity\\Service::statusOptionsList')
+      ->setDefaultValue(static::STATUS_DRAFT)
+      ->setDisplayOptions('form', ['type' => 'options_select', 'weight' => -5])
+      ->setDisplayOptions('view', ['type' => 'list_default', 'label' => 'inline'])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['creator'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Creator'))

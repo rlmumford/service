@@ -5,14 +5,28 @@ namespace Drupal\service;
 use Drupal\Core\Entity\ContentEntityInterface;
 
 /**
- * Interface for CounselKit service entities.
+ * Interface for service entities.
  */
 interface ServiceInterface extends ContentEntityInterface {
+
+  public const STATUS_DRAFT = 'draft';
+  public const STATUS_ACTIVE = 'active';
+  public const STATUS_COMPLETE = 'complete';
+  public const STATUS_CANCELLED = 'cancelled';
+  public const STATUS_SUPERSEDED = 'superseded';
+
+  /**
+   * Gets the lifecycle status, or NULL if explicitly cleared before saving.
+   *
+   * A status is required when saving.
+   */
+  public function getStatus(): ?string;
 
   /**
    * Get the service type.
    *
    * @return \Drupal\service\ServiceTypeInterface
+   *   The service type.
    */
   public function getType();
 
@@ -27,7 +41,7 @@ interface ServiceInterface extends ContentEntityInterface {
   /**
    * Get the manager id.
    *
-   * @return integer|string
+   * @return int|string
    *   The user id
    */
   public function getManagerId();
@@ -52,6 +66,7 @@ interface ServiceInterface extends ContentEntityInterface {
    * Get the recipient ids.
    *
    * @return string[]|int[]
+   *   The recipient user IDs.
    */
   public function getRecipientIds();
 

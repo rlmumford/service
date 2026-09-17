@@ -16,7 +16,7 @@ abstract class ServiceKernelTestBase extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = ['system', 'user', 'field', 'entity', 'views', 'service'];
+  protected static $modules = ['system', 'user', 'field', 'options', 'entity', 'views', 'service'];
 
   /**
    * The ancestry resolver.
