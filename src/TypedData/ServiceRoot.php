@@ -2,12 +2,16 @@
 
 namespace Drupal\service\TypedData;
 
+use Drupal\Core\Cache\CacheableDependencyInterface;
+
 use Drupal\Core\Entity\Plugin\DataType\EntityReference;
 
 /**
  * Computes a service reference's root when it is read.
  */
-class ServiceRoot extends EntityReference {
+class ServiceRoot extends EntityReference implements CacheableDependencyInterface {
+
+  use HierarchyCacheabilityTrait;
 
   /**
    * {@inheritdoc}

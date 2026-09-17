@@ -2,13 +2,17 @@
 
 namespace Drupal\service\TypedData;
 
+use Drupal\Core\Cache\CacheableDependencyInterface;
+
 use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\Core\TypedData\Plugin\DataType\ItemList;
 
 /**
  * Computes a service reference's ancestry when it is read.
  */
-class ServiceAncestry extends ItemList {
+class ServiceAncestry extends ItemList implements CacheableDependencyInterface {
+
+  use HierarchyCacheabilityTrait;
 
   use ComputedItemListTrait;
 

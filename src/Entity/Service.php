@@ -49,6 +49,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "label" = "label",
  *     "owner" = "manager"
  *   },
+ *   constraints = {"ServiceHierarchy" = {}},
  *   has_notes = "true",
  *   bundle_entity_type = "service_type",
  *   field_ui_base_route = "entity.service_type.edit_form",
@@ -199,7 +200,7 @@ class Service extends ContentEntityBase implements ServiceInterface, EntityOwner
    */
   protected function applyTokens($string, ?BubbleableMetadata $bubbleable_metadata = NULL) {
     $token_service = \Drupal::token();
-    $return  = $token_service->replace($string, ['service' => $this], [], $bubbleable_metadata);
+    $return = $token_service->replace($string, ['service' => $this], [], $bubbleable_metadata);
     return $return;
   }
 
@@ -241,6 +242,7 @@ class Service extends ContentEntityBase implements ServiceInterface, EntityOwner
    * Get the recipient ids.
    *
    * @return string[]|int[]
+   *   The recipient user IDs.
    */
   public function getRecipientIds() {
     $ids = [];
@@ -249,4 +251,5 @@ class Service extends ContentEntityBase implements ServiceInterface, EntityOwner
     }
     return $ids;
   }
+
 }

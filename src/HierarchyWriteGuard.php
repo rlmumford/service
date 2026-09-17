@@ -89,6 +89,17 @@ class HierarchyWriteGuard {
       $row = $this->loadRow($id);
       $id = $row->service;
     }
+    $this->validateScope($service);
+  }
+
+  /**
+   * Validates installation scope rules for both preflight and storage checks.
+   *
+   * This method does not acquire a lock or write data. Storage callers must
+   * hold the hierarchy lock; preflight callers must recheck during the save.
+   */
+  public function validateScope(ServiceInterface $service): void {
+    $parent_id = $service->get('service')->target_id;
     foreach ($this->scopePolicies as $policy) {
       $this->assertFreshReads();
       $storage = $this->entityTypeManager->getStorage('service');

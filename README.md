@@ -29,8 +29,20 @@ Cycles and missing references throw `InvalidServiceHierarchyException`. Callers
 must treat this as invalid hierarchy data, not as an empty or shorter tree.
 These internal APIs do not authorize access to returned entities; callers must
 check access before displaying them. They introduce no inherited permissions,
-managers, recipients, or lifecycle state. They do not provide rendered cache
-metadata or a cross-request hierarchy cache.
+managers, recipients, or lifecycle state. There is no cross-request hierarchy
+value cache.
+
+The computed `root` and `all` properties implement cacheability metadata. Bubble
+that metadata when caching their results: the owner tag covers a changed reference,
+and the service-list tags cover ancestor changes or deletion. New owners and
+unsaved targets have max-age zero. This uses broad invalidation rather than saving
+or explicitly invalidating every descendant. It does not grant access to values.
+
+Typed Data Plus fetcher consumers need its computed-property metadata fix
+([MR !4](https://git.drupalcode.org/project/typed_data_plus/-/merge_requests/4),
+merged into `2.0.x`) as well: collecting only the returned entity's metadata misses intermediate
+ancestor changes and empty-list results. Other consumers can use Drupal's
+`CacheableMetadata::createFromObject($property)` and bubble it themselves.
 
 ## Writing hierarchy relationships
 
@@ -50,7 +62,12 @@ the saved service; the supplied objects are not updated in place.
 Low-level entity saves retain Drupal's trusted-caller permission model, but still
 enforce structural and installation scope rules. User-facing callers must apply
 access checks or use the move API. Forms use Drupal's existing entity and reference
-validation; dedicated hierarchy validation messages are still to be added.
+validation. A `ServiceHierarchy` entity constraint reports invalid hierarchy and
+scope relationships on `service.0.target_id`, so normal entity forms and explicit
+API validation share the same preflight feedback. Validation does not acquire the
+write mutex or persist a move. Storage always rechecks after presave hooks, under
+the transaction-held lock. If a hierarchy error appears only during the form save,
+the form rebuilds with an error message; unrelated storage failures propagate.
 
 ### Scope policies
 
@@ -101,6 +118,5 @@ as with other Drupal entity writes.
 
 ## Remaining P2 work
 
-Descendant render-cache invalidation, form validation messages, and service/task
-lifecycle gates remain open. Parent transitions still do not change child state,
+Service/task lifecycle gates and their migrations/history remain open. Parent transitions still do not change child state,
 and only the immediate service will gate task execution.
