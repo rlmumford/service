@@ -2,11 +2,8 @@
 
 namespace Drupal\Tests\service\Kernel;
 
-use Drupal\KernelTests\KernelTestBase;
 use Drupal\service\Entity\Service;
-use Drupal\service\Entity\ServiceType;
 use Drupal\service\Exception\InvalidServiceHierarchyException;
-use Drupal\service\ServiceHierarchy;
 use Drupal\service\ServiceInterface;
 
 /**
@@ -14,31 +11,7 @@ use Drupal\service\ServiceInterface;
  *
  * @group service
  */
-class ServiceHierarchyTest extends KernelTestBase {
-
-  /**
-   * {@inheritdoc}
-   */
-  protected static $modules = ['system', 'user', 'field', 'entity', 'views', 'service'];
-
-  /**
-   * The ancestry resolver.
-   *
-   * @var \Drupal\service\ServiceHierarchy
-   */
-  protected ServiceHierarchy $hierarchy;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function setUp(): void {
-    parent::setUp();
-    $this->installEntitySchema('user');
-    $this->installEntitySchema('service');
-    $this->installConfig(['system', 'user']);
-    ServiceType::create(['id' => 'work', 'label' => 'Work'])->save();
-    $this->hierarchy = $this->container->get('service.hierarchy');
-  }
+class ServiceHierarchyTest extends ServiceKernelTestBase {
 
   /**
    * Ancestry includes the service; reference properties start at its parent.
@@ -144,7 +117,11 @@ class ServiceHierarchyTest extends KernelTestBase {
   public function testStoredCycle(): void {
     $first = $this->createService();
     $second = $this->createService($first);
-    $first->set('service', $second)->save();
+    // Simulate legacy corruption; normal saves must now refuse this cycle.
+    $this->container->get('database')->update('service')
+      ->fields(['service' => $second->id()])->condition('id', $first->id())->execute();
+    $this->container->get('database')->update('service_revision')
+      ->fields(['service' => $second->id()])->condition('id', $first->id())->execute();
     $this->container->get('entity_type.manager')->getStorage('service')->resetCache();
     $this->expectException(InvalidServiceHierarchyException::class);
     $second->get('service')->first()->get('all')->getValue();
@@ -168,18 +145,11 @@ class ServiceHierarchyTest extends KernelTestBase {
     $child = $this->createService($parent);
     $root_property = $child->get('service')->first()->get('root');
     $this->assertSame($root->id(), $root_property->getTargetIdentifier());
-    $root->delete();
+    // Simulate a dangling legacy reference without invoking deletion guards.
+    $this->container->get('database')->delete('service')->condition('id', $root->id())->execute();
+    $this->container->get('entity_type.manager')->getStorage('service')->resetCache();
     $this->expectException(InvalidServiceHierarchyException::class);
     $root_property->getValue();
-  }
-
-  /**
-   * Creates a saved service with an optional parent.
-   */
-  protected function createService(?ServiceInterface $parent = NULL): ServiceInterface {
-    $service = Service::create(['type' => 'work', 'label' => 'Work', 'service' => $parent]);
-    $service->save();
-    return $service;
   }
 
   /**

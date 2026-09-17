@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * Test hooks for final-reference validation.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_service_presave().
+ */
+function service_hierarchy_test_service_presave(EntityInterface $service) {
+  if ($service->label() === 'Self parent from hook') {
+    $service->set('service', $service->id());
+  }
+}

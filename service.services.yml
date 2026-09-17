@@ -2,3 +2,9 @@ services:
   service.hierarchy:
     class: Drupal\service\ServiceHierarchy
     arguments: ['@entity_type.manager']
+  service.hierarchy_write_guard:
+    class: Drupal\service\HierarchyWriteGuard
+    arguments: ['@database', '@entity_type.manager', !tagged_iterator service.hierarchy_scope_policy]
+  service.mover:
+    class: Drupal\service\ServiceMover
+    arguments: ['@database', '@entity_type.manager', '@service.hierarchy_write_guard']

@@ -1,0 +1,5 @@
+services:
+  service_hierarchy_test.scope:
+    class: Drupal\service_hierarchy_test\TestScopePolicy
+    tags:
+      - { name: service.hierarchy_scope_policy }

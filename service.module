@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Integrates services with entity fields, tasks, and notes.
+ */
+
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -98,4 +103,11 @@ function service_modules_installed($modules) {
       $service_field
     );
   }
+}
+
+/**
+ * Implements hook_task_storage_prewrite().
+ */
+function service_task_storage_prewrite(EntityInterface $task) {
+  \Drupal::service('service.hierarchy_write_guard')->validateReference($task->get('service')->target_id);
 }
