@@ -40,6 +40,12 @@ class ServiceTaskReadinessSubscriber implements EventSubscriberInterface {
     elseif ($service->getStatus() === ServiceInterface::STATUS_DRAFT) {
       $event->addReason('pending', 'service_draft', ['target_id' => $id]);
     }
+    elseif (in_array($service->getStatus(), [ServiceInterface::STATUS_CANCELLED, ServiceInterface::STATUS_SUPERSEDED], TRUE)) {
+      $event->addReason('invalid', 'service_' . $service->getStatus(), [
+        'target_id' => $id,
+        'status' => $service->getStatus(),
+      ]);
+    }
     elseif ($service->getStatus() !== ServiceInterface::STATUS_ACTIVE) {
       $event->addReason('waiting', 'service_inactive', [
         'target_id' => $id,
