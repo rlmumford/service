@@ -62,7 +62,7 @@ function service_update_8001() {
   }
 
   // Install configuration.
-  $source = new FileStorage(drupal_get_path('module', 'service') . '/config/install');
+  $source = new FileStorage(\Drupal::service('extension.list.module')->getPath('service') . '/config/install');
   /** @var \Drupal\Core\Config\StorageInterface $config_storage */
   $config_storage = \Drupal::service('config.storage');
 
@@ -79,7 +79,7 @@ function service_update_8001() {
  */
 function service_update_8002() {
   // Install configuration.
-  $source = new FileStorage(drupal_get_path('module', 'service') . '/config/install');
+  $source = new FileStorage(\Drupal::service('extension.list.module')->getPath('service') . '/config/install');
   /** @var \Drupal\Core\Config\StorageInterface $config_storage */
   $config_storage = \Drupal::service('config.storage');
 
